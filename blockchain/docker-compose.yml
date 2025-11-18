@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  node1:
+    build:
+      context: ./node
+      dockerfile: Dockerfile
+    container_name: gydschain-node1
+    ports:
+      - "8545:8545"
+      - "30303:30303"
+    environment:
+      - PORT=8545
+      - NODE_ID=1
+      - NETWORK=private
+    volumes:
+      - node1-data:/data
+    networks:
+      - gydschain-network
+    restart: unless-stopped
+
+  node2:
+    build:
+      context: ./node
+      dockerfile: Dockerfile
+    container_name: gydschain-node2
+    ports:
+      - "8546:8545"
+      - "30304:30303"
+    environment:
+      - PORT=8545
+      - NODE_ID=2
+      - NETWORK=private
+    volumes:
+      - node2-data:/data
+    networks:
+      - gydschain-network
+    restart: unless-stopped
+
+  node3:
+    build:
+      context: ./node
+      dockerfile: Dockerfile
+    container_name: gydschain-node3
+    ports:
+      - "8547:8545"
+      - "30305:30303"
+    environment:
+      - PORT=8545
+      - NODE_ID=3
+      - NETWORK=private
+    volumes:
+      - node3-data:/data
+    networks:
+      - gydschain-network
+    restart: unless-stopped
+
+volumes:
+  node1-data:
+  node2-data:
+  node3-data:
+
+networks:
+  gydschain-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16

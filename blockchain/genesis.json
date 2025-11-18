@@ -1,0 +1,49 @@
+{
+  "config": {
+    "chainId": 9125,
+    "networkId": 9125,
+    "chainName": "GYDSchain",
+    "nativeAsset": "GYDS",
+    "symbol": "GYDS",
+    "decimals": 18,
+    "consensus": {
+      "type": "hybrid",
+      "pow": {
+        "enabled": true,
+        "algorithm": "SHA-256",
+        "blockReward": "3000000000000000000",
+        "initialDifficulty": "0x20000",
+        "difficultyAdjustmentInterval": 10,
+        "retargetingAlgorithm": "bitcoin-style"
+      },
+      "pos": {
+        "enabled": true,
+        "minStake": "1000000000000000000",
+        "stakeRewardPerBlock": "1000000000000000000",
+        "validatorSlots": 21,
+        "stakeLockDuration": 86400,
+        "stakeUnlockDuration": 86400,
+        "slashing": false
+      }
+    },
+    "block": {
+      "blockTime": 120,
+      "gasLimit": 30000000,
+      "baseTransactionFee": "100000000000000",
+      "maxBlockSize": 2097152
+    },
+    "economic": {
+      "maximumSupply": "100000000000000000000000000",
+      "initialSupply": "0",
+      "stopMintingAtMaxSupply": true,
+      "dynamicMinting": true
+    }
+  },
+  "timestamp": "0x6731A480",
+  "difficulty": "0x20000",
+  "gasLimit": "0x1C9C380",
+  "alloc": {},
+  "validators": [],
+  "extraData": "0x47594453636861696e2047656e65736973",
+  "nonce": "0x0000000000000000"
+}
