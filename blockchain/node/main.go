@@ -106,6 +106,10 @@ func main() {
 	http.HandleFunc("/stake", handleStake)
 	http.HandleFunc("/stats", handleStats)
 	http.HandleFunc("/health", handleHealth)
+	http.HandleFunc("/wallet/create", handleCreateWallet)
+	http.HandleFunc("/wallet/recover", handleRecoverWallet)
+	http.HandleFunc("/transaction/send", handleSendTransaction)
+	http.HandleFunc("/transaction/fee", handleCalculateFee)
 	
 	log.Printf("✅ Node ready on port %s", port)
 	log.Fatal(http.ListenAndServe(":"+port, enableCORS(http.DefaultServeMux)))
@@ -443,6 +447,120 @@ func handleRPC(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	json.NewEncoder(w).Encode(response)
+}
+
+func handleCreateWallet(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	account, err := CreateAccount()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(account)
+}
+
+func handleRecoverWallet(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req struct {
+		Mnemonic string `json:"mnemonic"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if err := ValidateMnemonic(req.Mnemonic); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	account, err := RecoverAccountFromMnemonic(req.Mnemonic)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(account)
+}
+
+func handleSendTransaction(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req struct {
+		Transaction Transaction `json:"transaction"`
+		PrivateKey  string      `json:"privateKey"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Validate transaction
+	if err := ValidateTransaction(&req.Transaction); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Sign transaction
+	if err := SignTransaction(&req.Transaction, req.PrivateKey); err != nil {
+		http.Error(w, "Failed to sign transaction", http.StatusInternalServerError)
+		return
+	}
+
+	// Add to pending transactions
+	blockchain.mu.Lock()
+	req.Transaction.Timestamp = time.Now().Unix()
+	blockchain.PendingTxs = append(blockchain.PendingTxs, req.Transaction)
+	blockchain.mu.Unlock()
+
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status": "pending",
+		"hash":   req.Transaction.Hash,
+	})
+}
+
+func handleCalculateFee(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req struct {
+		Gas      int64  `json:"gas"`
+		GasPrice string `json:"gasPrice"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	fee, err := CalculateTransactionFee(req.Gas, req.GasPrice)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"fee":      fee.String(),
+		"baseFee":  BaseFee,
+		"gasPrice": req.GasPrice,
+		"gasLimit": req.Gas,
+	})
 }
 
 func enableCORS(next http.Handler) http.Handler {
