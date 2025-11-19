@@ -1,0 +1,71 @@
+# Lite Node Configuration Example
+# Copy this file to node-config.yml and update with your values
+
+node:
+  type: "lite"
+  version: "1.0.0"
+  data_dir: "./data-lite"
+
+network:
+  listen_address: "0.0.0.0"
+  port: 8545
+  max_peers: 25
+  bootstrap_nodes:
+    - "node1.gyd-network.com:8545"
+    - "node2.gyd-network.com:8545"
+
+location:
+  region: "us-west-2"
+  country: "US"
+  latitude: 47.6062
+  longitude: -122.3321
+
+wallet:
+  # Generate these using: go run main.go generate-keys
+  address: "YOUR_WALLET_ADDRESS_HERE"
+  public_key: "YOUR_PUBLIC_KEY_HERE"
+
+sync:
+  fast_sync: true
+  spv_mode: true  # Simplified Payment Verification
+  checkpoint_interval: 5000
+  max_block_headers: 10000
+  cache_size: 512  # MB
+
+rpc:
+  enabled: true
+  host: "0.0.0.0"
+  port: 8546
+  cors_origins: ["*"]
+  max_request_size: 524288  # 512KB
+
+# Lite nodes don't mine
+mining:
+  enabled: false
+
+consensus:
+  # Lite nodes validate but don't produce blocks
+  participate: false
+  
+logging:
+  level: "info"
+  file: "./logs/lite-node.log"
+  max_size: 50  # MB
+  max_backups: 2
+  
+security:
+  private_key_file: "./keys/lite-node-private.key"
+  tls_enabled: false
+  tls_cert: ""
+  tls_key: ""
+
+metrics:
+  enabled: true
+  port: 9090
+  path: "/metrics"
+
+# Lite node specific settings
+pruning:
+  enabled: true
+  keep_recent_blocks: 1000
+  prune_interval: 3600  # seconds
