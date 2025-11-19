@@ -14,7 +14,87 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      encrypted_wallets: {
+        Row: {
+          created_at: string
+          encrypted_data: string
+          encryption_salt: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          encrypted_data: string
+          encryption_salt: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          encrypted_data?: string
+          encryption_salt?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string
+          id: string
+          logo_url: string | null
+          pin_hash: string
+          updated_at: string
+          user_id: string
+          username: string
+          wallet_address: string
+        }
+        Insert: {
+          created_at?: string
+          full_name: string
+          id?: string
+          logo_url?: string | null
+          pin_hash: string
+          updated_at?: string
+          user_id: string
+          username: string
+          wallet_address: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string
+          id?: string
+          logo_url?: string | null
+          pin_hash?: string
+          updated_at?: string
+          user_id?: string
+          username?: string
+          wallet_address?: string
+        }
+        Relationships: []
+      }
+      system_admin: {
+        Row: {
+          created_at: string
+          id: string
+          public_key: string
+          wallet_address: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          public_key: string
+          wallet_address: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          public_key?: string
+          wallet_address?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
