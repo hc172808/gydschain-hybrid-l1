@@ -38,6 +38,54 @@ export type Database = {
         }
         Relationships: []
       }
+      nodes: {
+        Row: {
+          country: string
+          created_at: string
+          id: string
+          ip_address: string
+          last_seen: string
+          node_id: string
+          node_type: string
+          port: number
+          public_key: string
+          region: string
+          status: string
+          version: string
+          wallet_address: string
+        }
+        Insert: {
+          country: string
+          created_at?: string
+          id?: string
+          ip_address: string
+          last_seen?: string
+          node_id: string
+          node_type: string
+          port: number
+          public_key: string
+          region: string
+          status: string
+          version: string
+          wallet_address: string
+        }
+        Update: {
+          country?: string
+          created_at?: string
+          id?: string
+          ip_address?: string
+          last_seen?: string
+          node_id?: string
+          node_type?: string
+          port?: number
+          public_key?: string
+          region?: string
+          status?: string
+          version?: string
+          wallet_address?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -74,6 +122,66 @@ export type Database = {
         }
         Relationships: []
       }
+      swaps: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          exchange_rate: number
+          from_amount: number
+          from_token_id: string
+          from_wallet: string
+          id: string
+          status: string
+          swap_hash: string
+          to_amount: number
+          to_token_id: string
+          to_wallet: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          exchange_rate: number
+          from_amount: number
+          from_token_id: string
+          from_wallet: string
+          id?: string
+          status: string
+          swap_hash: string
+          to_amount: number
+          to_token_id: string
+          to_wallet: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          exchange_rate?: number
+          from_amount?: number
+          from_token_id?: string
+          from_wallet?: string
+          id?: string
+          status?: string
+          swap_hash?: string
+          to_amount?: number
+          to_token_id?: string
+          to_wallet?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "swaps_from_token_id_fkey"
+            columns: ["from_token_id"]
+            isOneToOne: false
+            referencedRelation: "tokens"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "swaps_to_token_id_fkey"
+            columns: ["to_token_id"]
+            isOneToOne: false
+            referencedRelation: "tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       system_admin: {
         Row: {
           created_at: string
@@ -94,6 +202,174 @@ export type Database = {
           wallet_address?: string
         }
         Relationships: []
+      }
+      tokens: {
+        Row: {
+          created_at: string
+          decimals: number
+          id: string
+          is_stable: boolean | null
+          name: string
+          symbol: string
+          total_supply: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          decimals?: number
+          id?: string
+          is_stable?: boolean | null
+          name: string
+          symbol: string
+          total_supply?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          decimals?: number
+          id?: string
+          is_stable?: boolean | null
+          name?: string
+          symbol?: string
+          total_supply?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      transaction_rules: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean | null
+          rule_name: string
+          rule_type: string
+          token_id: string | null
+          updated_at: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          rule_name: string
+          rule_type: string
+          token_id?: string | null
+          updated_at?: string
+          value: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          rule_name?: string
+          rule_type?: string
+          token_id?: string | null
+          updated_at?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transaction_rules_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      transactions: {
+        Row: {
+          amount: number
+          block_number: number | null
+          confirmed_at: string | null
+          created_at: string
+          fee: number
+          from_address: string
+          id: string
+          nonce: number
+          signature: string
+          status: string
+          to_address: string
+          token_id: string
+          tx_hash: string
+        }
+        Insert: {
+          amount: number
+          block_number?: number | null
+          confirmed_at?: string | null
+          created_at?: string
+          fee?: number
+          from_address: string
+          id?: string
+          nonce: number
+          signature: string
+          status: string
+          to_address: string
+          token_id: string
+          tx_hash: string
+        }
+        Update: {
+          amount?: number
+          block_number?: number | null
+          confirmed_at?: string | null
+          created_at?: string
+          fee?: number
+          from_address?: string
+          id?: string
+          nonce?: number
+          signature?: string
+          status?: string
+          to_address?: string
+          token_id?: string
+          tx_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wallet_balances: {
+        Row: {
+          balance: number
+          created_at: string
+          id: string
+          locked_balance: number
+          token_id: string
+          updated_at: string
+          wallet_address: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          id?: string
+          locked_balance?: number
+          token_id: string
+          updated_at?: string
+          wallet_address: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          id?: string
+          locked_balance?: number
+          token_id?: string
+          updated_at?: string
+          wallet_address?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallet_balances_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "tokens"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
